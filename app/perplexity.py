@@ -10,7 +10,7 @@ class PerplexityClient:
             "Content-Type": "application/json"
         }
     
-    def generate_response(self, messages, model="sonar", max_tokens=1000):
+    def generate_response(self, messages, model="sonar", max_tokens=500):
         """
         Generate a response using Perplexity AI API
         

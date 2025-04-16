@@ -45,6 +45,67 @@ class PerplexityClient:
             print(f"Error calling Perplexity API: {e}")
             return {"error": str(e)}
     
+    def markdown_to_plain_text(self, markdown_text):
+        """
+        Convert Markdown text to plain text by removing or replacing formatting.
+        
+        Args:
+            markdown_text (str): Text in Markdown format
+            
+        Returns:
+            str: Plain text with Markdown formatting removed or replaced
+        """
+        if not markdown_text:
+            return ""
+        
+        # Replace bold (**text** or __text__) with just the text
+        import re
+        text = re.sub(r'\*\*(.*?)\*\*', r'\1', markdown_text)
+        text = re.sub(r'__(.*?)__', r'\1', text)
+        
+        # Replace italic (*text* or _text_) with just the text
+        text = re.sub(r'\*(.*?)\*', r'\1', text)
+        text = re.sub(r'_(.*?)_', r'\1', text)
+        
+        # Replace headers (# Header) with 'Header:'
+        text = re.sub(r'^#\s+(.*)', r'\1:', text, flags=re.MULTILINE)
+        text = re.sub(r'^##\s+(.*)', r'\1:', text, flags=re.MULTILINE)
+        text = re.sub(r'^###\s+(.*)', r'\1:', text, flags=re.MULTILINE)
+        
+        # Replace bullet points with '- '
+        text = re.sub(r'^\s*[-*+]\s+', '- ', text, flags=re.MULTILINE)
+        
+        # Replace numbered lists with '1. ', '2. ', etc.
+        lines = text.split('\n')
+        new_lines = []
+        number = 0
+        for line in lines:
+            if re.match(r'^\s*\d+\.\s+', line):
+                number += 1
+                line = re.sub(r'^\s*\d+\.\s+', f'{number}. ', line)
+            elif re.match(r'^\s*[-*+]\s+', line):
+                number = 0  # Reset counter when switching to bullets
+            new_lines.append(line)
+        text = '\n'.join(new_lines)
+        
+        # Replace links with text (URL)
+        text = re.sub(r'\[(.*?)\]\((.*?)\)', r'\1 (\2)', text)
+        
+        # Remove citations like [1], [2], etc.
+        text = re.sub(r'\[\d+\]', '', text)
+        
+        # Replace code blocks and inline code with just the text
+        text = re.sub(r'```.*?\n(.*?)\n```', r'\1', text, flags=re.DOTALL)
+        text = re.sub(r'`(.*?)`', r'\1', text)
+        
+        # Replace blockquotes with '> '
+        text = re.sub(r'^>\s+', '> ', text, flags=re.MULTILINE)
+        
+        # Replace multiple newlines with double newline for readability
+        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text)
+        
+        return text.strip()
+    
     def ask(self, query, system_prompt=None):
         """
         Simple helper method to ask a single question
@@ -54,7 +115,7 @@ class PerplexityClient:
             system_prompt (str, optional): System prompt to set context
             
         Returns:
-            str: Generated text response
+            str: Generated text response formatted for LINE
         """
         messages = []
         
@@ -72,7 +133,9 @@ class PerplexityClient:
             return f"Sorry, I encountered an error: {response['error']}"
         
         try:
-            return response["choices"][0]["message"]["content"]
+            # Convert Markdown response to plain text for LINE compatibility
+            markdown_content = response["choices"][0]["message"]["content"]
+            return self.markdown_to_plain_text(markdown_content)
         except (KeyError, IndexError) as e:
             print(f"Error processing response: {e}")
             return "Sorry, I couldn't generate a response at this time."

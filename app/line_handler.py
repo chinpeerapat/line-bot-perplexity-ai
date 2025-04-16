@@ -16,7 +16,7 @@ pplx_client = PerplexityClient()
 # System prompt for the Perplexity API
 SYSTEM_PROMPT = """
 You are a helpful assistant that provides accurate and useful information.
-Please keep your answers concise and to the point, but provide enough detail to be helpful.
+Please keep your answers concise and to the point, optimized for reading in a smnall screen.
 """
 
 @handler.add(MessageEvent, message=TextMessage)

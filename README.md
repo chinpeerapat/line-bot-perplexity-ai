@@ -1,5 +1,10 @@
 # LINE Bot with Perplexity AI Integration
 
+[![GitHub license](https://img.shields.io/github/license/chinpeerapat/line-bot-perplexity-ai)](https://github.com/chinpeerapat/line-bot-perplexity-ai/blob/main/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.1-green)](https://fastapi.tiangolo.com/)
+[![LINE Bot SDK](https://img.shields.io/badge/LINE%20Bot%20SDK-3.5.0-brightgreen)](https://github.com/line/line-bot-sdk-python)
+
 A LINE Bot built using FastAPI that integrates with the Perplexity AI API to provide intelligent responses to user messages.
 
 ## Features
@@ -20,8 +25,8 @@ A LINE Bot built using FastAPI that integrates with the Perplexity AI API to pro
 1. **Clone the repository**
 
 ```bash
-git clone <repository-url>
-cd linebot-pplx-app
+git clone https://github.com/chinpeerapat/line-bot-perplexity-ai.git
+cd line-bot-perplexity-ai
 ```
 
 2. **Create and activate a virtual environment**
@@ -59,7 +64,7 @@ python run.py
 ### Project Structure
 
 ```
-linebot-pplx-app/
+line-bot-perplexity-ai/
 ├── app/
 │   ├── __init__.py
 │   ├── config.py           # Configuration settings
@@ -69,6 +74,7 @@ linebot-pplx-app/
 ├── .env                    # Environment variables (create this file)
 ├── requirements.txt        # Dependencies
 ├── run.py                  # Application entry point
+├── setup.sh                # Setup script
 └── README.md               # Project documentation
 ```
 

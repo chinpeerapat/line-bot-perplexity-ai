@@ -13,3 +13,13 @@ PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY", "your_perplexity_api_key")
 
 # App settings
 PORT = int(os.getenv("PORT", 8000))
+
+# Perplexity AI settings
+PERPLEXITY_MODEL = os.getenv("PERPLEXITY_MODEL", "sonar")
+PERPLEXITY_MAX_TOKENS = int(os.getenv("PERPLEXITY_MAX_TOKENS", 500))
+PERPLEXITY_SEARCH_CONTEXT_SIZE = os.getenv("PERPLEXITY_SEARCH_CONTEXT_SIZE", "low")
+PERPLEXITY_SYSTEM_PROMPT = os.getenv(
+    "PERPLEXITY_SYSTEM_PROMPT",
+    """You are a helpful assistant that provides accurate and useful information.
+Please keep your answers concise and to the point, optimized for reading on a small screen."""
+)

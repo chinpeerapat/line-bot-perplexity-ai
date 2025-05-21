@@ -1,5 +1,5 @@
 import requests
-from app.config import PERPLEXITY_API_KEY
+from app.config import PERPLEXITY_API_KEY, PERPLEXITY_MODEL, PERPLEXITY_MAX_TOKENS, PERPLEXITY_SEARCH_CONTEXT_SIZE
 
 class PerplexityClient:
     def __init__(self, api_key=PERPLEXITY_API_KEY):
@@ -10,18 +10,24 @@ class PerplexityClient:
             "Content-Type": "application/json"
         }
     
-    def generate_response(self, messages, model="sonar", max_tokens=500):
+    def generate_response(self, messages, model=None, max_tokens=None):
         """
         Generate a response using Perplexity AI API
         
         Args:
             messages (list): List of message objects (each with 'role' and 'content' keys)
-            model (str): Model name (default: 'sonar')
-            max_tokens (int): Maximum number of tokens to generate
+            model (str, optional): Model name (default: None)
+            max_tokens (int, optional): Maximum number of tokens to generate (default: None)
             
         Returns:
             dict: Response from Perplexity AI
         """
+        # Use environment-configured defaults if not provided
+        if model is None:
+            model = PERPLEXITY_MODEL
+        if max_tokens is None:
+            max_tokens = PERPLEXITY_MAX_TOKENS
+
         payload = {
             "temperature": 0.2,
             "top_p": 0.9,
@@ -31,7 +37,7 @@ class PerplexityClient:
             "stream": False,
             "presence_penalty": 0,
             "frequency_penalty": 1,
-            "web_search_options": {"search_context_size": "low"},
+            "web_search_options": {"search_context_size": PERPLEXITY_SEARCH_CONTEXT_SIZE},
             "model": model,
             "max_tokens": max_tokens,
             "messages": messages

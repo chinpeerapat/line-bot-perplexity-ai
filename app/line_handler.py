@@ -3,7 +3,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage
 )
-from app.config import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET
+from app.config import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, PERPLEXITY_SYSTEM_PROMPT
 from app.perplexity import PerplexityClient
 
 # Initialize LINE API client
@@ -12,12 +12,6 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 # Initialize Perplexity client
 pplx_client = PerplexityClient()
-
-# System prompt for the Perplexity API
-SYSTEM_PROMPT = """
-You are a helpful assistant that provides accurate and useful information.
-Please keep your answers concise and to the point, optimized for reading in a smnall screen.
-"""
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
@@ -32,7 +26,7 @@ def handle_text_message(event):
         print(f"Received message: {user_message}")
         
         # Generate response using Perplexity AI
-        ai_response = pplx_client.ask(user_message, system_prompt=SYSTEM_PROMPT)
+        ai_response = pplx_client.ask(user_message, system_prompt=PERPLEXITY_SYSTEM_PROMPT)
         
         # Reply to the user
         line_bot_api.reply_message(

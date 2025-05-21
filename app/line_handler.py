@@ -3,7 +3,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage
 )
-from app.config import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, PERPLEXITY_SYSTEM_PROMPT
+from app.config import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, PERPLEXITY_SYSTEM_PROMPT, TRIGGER_PHRASE
 from app.perplexity import PerplexityClient
 
 # Initialize LINE API client
@@ -22,11 +22,16 @@ def handle_text_message(event):
         event: LINE message event
     """
     try:
-        user_message = event.message.text
-        print(f"Received message: {user_message}")
-        
+        raw_text = event.message.text.strip()
+        print(f"Received message: {raw_text}")
+        # In group or room chats, only proceed if message starts with trigger phrase
+        if event.source.type in ["group", "room"]:
+            if not raw_text.startswith(TRIGGER_PHRASE):
+                return  # not a command for the bot
+            # strip trigger phrase
+            raw_text = raw_text[len(TRIGGER_PHRASE):].strip()
         # Generate response using Perplexity AI
-        ai_response = pplx_client.ask(user_message, system_prompt=PERPLEXITY_SYSTEM_PROMPT)
+        ai_response = pplx_client.ask(raw_text, system_prompt=PERPLEXITY_SYSTEM_PROMPT)
         
         # Reply to the user
         line_bot_api.reply_message(

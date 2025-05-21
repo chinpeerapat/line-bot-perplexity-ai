@@ -23,3 +23,6 @@ PERPLEXITY_SYSTEM_PROMPT = os.getenv(
     """You are a helpful assistant that provides accurate and useful information.
 Please keep your answers concise and to the point, optimized for reading on a small screen."""
 )
+
+# Trigger phrase for group/room chats; only respond when message starts with this prefix
+TRIGGER_PHRASE = os.getenv("TRIGGER_PHRASE", "/ask")

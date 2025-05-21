@@ -46,11 +46,15 @@ pip install -r requirements.txt
 
 Create a `.env` file in the project root with the following variables:
 
-```
+```bash
 LINE_CHANNEL_SECRET=your_line_channel_secret
 LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
 PERPLEXITY_API_KEY=your_perplexity_api_key
 PORT=8000
+PERPLEXITY_MODEL=sonar
+PERPLEXITY_MAX_TOKENS=500
+PERPLEXITY_SEARCH_CONTEXT_SIZE=low
+PERPLEXITY_SYSTEM_PROMPT="You are a helpful assistant that provides accurate and useful information.\nPlease keep your answers concise and to the point, optimized for reading on a small screen."
 ```
 
 5. **Run the application**
@@ -114,7 +118,12 @@ Make sure to set the required environment variables in your deployment environme
 
 1. Go to [Perplexity AI](https://www.perplexity.ai/)
 2. Sign up and get your API key
-3. Set the API key in your environment variables
+3. Set the following environment variables in your `.env` file:
+   - `PERPLEXITY_API_KEY`
+   - `PERPLEXITY_MODEL`
+   - `PERPLEXITY_MAX_TOKENS`
+   - `PERPLEXITY_SEARCH_CONTEXT_SIZE`
+   - `PERPLEXITY_SYSTEM_PROMPT`
 
 ## License
 

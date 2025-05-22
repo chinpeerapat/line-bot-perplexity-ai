@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app.config import LINE_CHANNEL_SECRET
-from app.line_handler import handler
+import app.line_handler as line_handler
 from linebot.v3.exceptions import InvalidSignatureError
 import uvicorn
 
@@ -28,7 +28,7 @@ async def line_webhook(request: Request):
     
     try:
         # Handle the webhook event using the LINE handler
-        handler.handle(body_text, signature)
+        line_handler.handler.handle(body_text, signature)
     except InvalidSignatureError:
         raise HTTPException(status_code=400, detail="Invalid signature")
     except Exception as e:

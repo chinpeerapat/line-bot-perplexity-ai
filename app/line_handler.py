@@ -1,19 +1,18 @@
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage
-)
+from linebot.v3 import WebhookHandler
+from linebot.v3.exceptions import InvalidSignatureError
+from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, ReplyMessageRequest, TextMessage
+from linebot.v3.webhooks import MessageEvent, TextMessageContent
 from app.config import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, PERPLEXITY_SYSTEM_PROMPT, TRIGGER_PHRASE
 from app.perplexity import PerplexityClient
 
-# Initialize LINE API client
-line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+# Initialize LINE Webhook handler and v3 API configuration
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
+configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 
 # Initialize Perplexity client
 pplx_client = PerplexityClient()
 
-@handler.add(MessageEvent, message=TextMessage)
+@handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     """
     Handle text messages from LINE users
@@ -33,15 +32,23 @@ def handle_text_message(event):
         # Generate response using Perplexity AI
         ai_response = pplx_client.ask(raw_text, system_prompt=PERPLEXITY_SYSTEM_PROMPT)
         
-        # Reply to the user
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=ai_response)
-        )
+        # Reply to the user using v3 client
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            messaging_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=ai_response)]
+                )
+            )
     except Exception as e:
         print(f"Error processing message: {e}")
-        # Send error message to user
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="Sorry, I encountered an error while processing your request.")
-        )
+        # Send error message to user using v3 client
+        with ApiClient(configuration) as api_client:
+            messaging_api = MessagingApi(api_client)
+            messaging_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text="Sorry, I encountered an error while processing your request.")]
+                )
+            )

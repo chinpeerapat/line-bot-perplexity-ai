@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app.config import LINE_CHANNEL_SECRET
-from app.line_handler import handler, line_bot_api
-from linebot.exceptions import InvalidSignatureError
+from app.line_handler import handler
+from linebot.v3.exceptions import InvalidSignatureError
 import uvicorn
 
 app = FastAPI(title="LINE Bot with Perplexity AI Integration")

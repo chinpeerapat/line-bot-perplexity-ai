@@ -20,6 +20,10 @@ def handle_text_message(event):
     Args:
         event: LINE message event
     """
+    # Skip redelivered events since reply_token is only valid once
+    if hasattr(event, 'delivery_context') and getattr(event.delivery_context, 'is_redelivery', False):
+        print("Skipping redelivered event, reply_token may be invalid")
+        return
     try:
         raw_text = event.message.text.strip()
         print(f"Received message: {raw_text}")
@@ -43,12 +47,15 @@ def handle_text_message(event):
             )
     except Exception as e:
         print(f"Error processing message: {e}")
-        # Send error message to user using v3 client
+        # Attempt to send error message to user, but swallow exceptions (e.g., invalid reply token)
         with ApiClient(configuration) as api_client:
             messaging_api = MessagingApi(api_client)
-            messaging_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="Sorry, I encountered an error while processing your request.")]
+            try:
+                messaging_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text="Sorry, I encountered an error while processing your request.")]
+                    )
                 )
-            )
+            except Exception as reply_error:
+                print(f"Error sending error message: {reply_error}")
